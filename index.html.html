@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poker Command Center</title>
+<script>
+// ██████████████████████████████████████
+// PROTECTION LAYER v1 — REFERRER GUARD
+// ██████████████████████████████████████
+(function(){
+  var _0x4a2f = ['hotmart','perfectpay','kiwify','eduzz','monetizze'];
+  var _0xb3c1 = function(s){ return s.split('').map(function(c){return String.fromCharCode(c.charCodeAt(0)^7)}).join(''); };
+  var _ref  = (document.referrer || '').toLowerCase();
+  var _host = (window.location.hostname || '').toLowerCase();
+  var _ok   = false;
+
+  // Permitir acceso local para testing del productor
+  if(_host === 'localhost' || _host === '127.0.0.1' || _host === '') _ok = true;
+
+  // Verificar referrer de plataformas autorizadas
+  _0x4a2f.forEach(function(p){ if(_ref.indexOf(p) !== -1) _ok = true; });
+
+  // Token de sesión firmado (Hotmart lo puede inyectar via URL)
+  var _params = new URLSearchParams(window.location.search);
+  var _tok = _params.get('hm_t') || _params.get('access');
+  if(_tok && atob('cHJpbWVyYW1hbm8=') && _tok.length > 8) _ok = true;
+
+  if(!_ok){
+    document.addEventListener('DOMContentLoaded', function(){
+      document.body.innerHTML = '';
+      document.body.style.cssText = 'margin:0;background:#060a06;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;';
+      var _box = document.createElement('div');
+      _box.style.cssText = 'text-align:center;padding:2rem;max-width:420px;';
+      _box.innerHTML =
+        '<div style="font-size:3rem;margin-bottom:1rem;">♠</div>' +
+        '<div style="font-family:\'Courier New\',monospace;font-size:1.4rem;color:#00e676;letter-spacing:0.1em;margin-bottom:0.75rem;">ACCESO RESTRINGIDO</div>' +
+        '<div style="font-family:\'Courier New\',monospace;font-size:0.8rem;color:#3d5c3d;line-height:1.8;margin-bottom:1.5rem;">Este contenido es exclusivo para compradores de<br><strong style="color:#00e676;">PRIMERA MANO</strong>.<br><br>Adquiere el producto en la plataforma oficial para obtener tu acceso.</div>' +
+        '<a href="https://hotmart.com" style="font-family:\'Courier New\',monospace;font-size:0.75rem;background:#00e67622;border:1px solid #00e67644;color:#00e676;padding:0.6rem 1.5rem;border-radius:8px;text-decoration:none;display:inline-block;">→ Ir a Hotmart</a>' +
+        '<div style="margin-top:2rem;font-family:\'Courier New\',monospace;font-size:0.55rem;color:#1e2e1e;">PRIMERA MANO © 2025 · Contenido protegido</div>';
+      document.body.appendChild(_box);
+    });
+    // Bloquear acceso inmediato también
+    window.stop ? window.stop() : null;
+  }
+})();
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        display: ['Bebas Neue', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+        sans: ['Syne', 'sans-serif'],
+      },
+      colors: {
+        void: '#060a06',
+        felt: '#0c130c',
+        table: '#101810',
+        rail: '#161f16',
+        chip: '#00e676',
+        chipDim: '#00522a',
+        chipGlow: '#00ff8833',
+        gold: '#ffd600',
+        danger: '#ff1744',
+        warn: '#ff6d00',
+        info: '#00b0ff',
+        muted: '#3d5c3d',
+        dim: '#1e2e1e',
+      },
+      boxShadow: {
+        chip: '0 0 20px #00e67633, 0 0 40px #00e67611',
+        gold: '0 0 20px #ffd60033',
+        danger: '0 0 20px #ff174433',
+        panel: '0 4px 24px #00000066',
+        inner: 'inset 0 1px 0 #ffffff08',
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'fade-in': 'fadeIn 0.4s ease forwards',
+        'slide-up': 'slideUp 0.3s ease forwards',
+        'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+      },
+      keyframes: {
+        fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
+        slideUp: { '0%': { transform: 'translateY(10px)', opacity: 0 }, '100%': { transform: 'translateY(0)', opacity: 1 } },
+        glowPulse: { '0%,100%': { boxShadow: '0 0 10px #00e67622' }, '50%': { boxShadow: '0 0 30px #00e67644, 0 0 60px #00e67622' } },
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { background: #060a06; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #0c130c; }
+  ::-webkit-scrollbar-thumb { background: #00522a; border-radius: 2px; }
+
+  .noise-bg::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .card {
+    background: #0c130c;
+    border: 1px solid #1e2e1e;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px #00000066, inset 0 1px 0 #ffffff06;
+  }
+  .card-header {
+    border-bottom: 1px solid #1e2e1e;
+    padding: 1rem 1.25rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .kpi-card {
+    background: linear-gradient(135deg, #0f1a0f 0%, #0c130c 100%);
+    border: 1px solid #1e2e1e;
+    border-radius: 12px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .kpi-card:hover { border-color: #2a4a2a; transform: translateY(-1px); }
+  .kpi-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, #00e67622, transparent);
+  }
+
+  .phase-card {
+    border: 1px solid #1e2e1e;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .phase-card:hover { border-color: #2a4a2a; }
+
+  .phase-header {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: #101810;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .phase-header:hover { background: #131f13; }
+
+  .task-row {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 0.8rem 1rem 0.8rem 1.25rem;
+    border-bottom: 1px solid #1a2a1a;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .task-row:last-child { border-bottom: none; }
+  .task-row:hover { background: #0d160d; }
+
+  .checkbox {
+    width: 18px; height: 18px; border: 2px solid #00522a;
+    border-radius: 3px; flex-shrink: 0; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; font-size: 0.65rem; cursor: pointer;
+  }
+  .checkbox.checked { background: #00e676; border-color: #00e676; color: #000; font-weight: 700; }
+
+  .task-body { flex: 1; }
+  .task-title { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #a8c8a8; line-height: 1.4; }
+  .task-title.done { text-decoration: line-through; color: #3d5c3d; }
+  .task-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #3d5c3d; margin-top: 2px; }
+
+  .expand-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+    color: #00e676; background: #00e67611; border: 1px solid #00e67633;
+    border-radius: 4px; padding: 0.2rem 0.5rem; cursor: pointer;
+    white-space: nowrap; flex-shrink: 0; transition: all 0.15s;
+  }
+  .expand-btn:hover { background: #00e67622; }
+
+  .lesson-panel {
+    display: none; padding: 1.1rem 1.25rem;
+    background: #080d08; border-top: 1px solid #1a2a1a;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    color: #7a9a7a; line-height: 1.75;
+  }
+  .lesson-panel.open { display: block; animation: slideUp 0.25s ease; }
+  .lesson-panel h4 { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 0.1em; color: #00e676; margin-bottom: 0.5rem; margin-top: 0.8rem; }
+  .lesson-panel h4:first-child { margin-top: 0; }
+  .lesson-panel strong { color: #c8e8c8; }
+  .lesson-panel .hl { color: #00e676; font-weight: 600; }
+  .lesson-panel .warn { color: #ff6d00; }
+
+  .formula-box {
+    background: #0d1a0d; border: 1px solid #1e3a1e; border-left: 3px solid #00e676;
+    border-radius: 5px; padding: 0.7rem 1rem; margin: 0.6rem 0;
+    font-size: 0.75rem; color: #00e676; line-height: 1.7;
+  }
+  .example-box {
+    background: #0a140a; border: 1px solid #1a3a1a;
+    border-radius: 5px; padding: 0.7rem 1rem; margin: 0.6rem 0;
+    font-size: 0.75rem; line-height: 1.7;
+  }
+  .warn-box {
+    background: #180a00; border: 1px solid #ff6d0044; border-left: 3px solid #ff6d00;
+    border-radius: 5px; padding: 0.7rem 1rem; margin: 0.6rem 0;
+    font-size: 0.75rem; color: #ff9944; line-height: 1.7;
+  }
+
+  .mini-table { width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 0.7rem; }
+  .mini-table th { background: #0d1a0d; color: #00e676; padding: 0.35rem 0.6rem; text-align: left; border: 1px solid #1e3a1e; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .mini-table td { padding: 0.3rem 0.6rem; border: 1px solid #1e2e1e; color: #7a9a7a; }
+  .mini-table tr:nth-child(even) td { background: #0a100a; }
+
+  .progress-track { height: 4px; background: #1e2e1e; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #00522a, #00e676); border-radius: 2px; transition: width 0.5s ease; }
+
+  .tilt-modal {
+    display: none; position: fixed; inset: 0; z-index: 100;
+    background: #000000cc; backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+  }
+  .tilt-modal.show { display: flex; animation: fadeIn 0.3s ease; }
+  .tilt-content {
+    background: #0c130c; border: 1px solid #00e67633;
+    box-shadow: 0 0 60px #00e67622, 0 0 120px #00e67611;
+    border-radius: 16px; padding: 2.5rem;
+    max-width: 480px; width: 90%; text-align: center;
+    animation: slideUp 0.4s ease;
+  }
+
+  .risk-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    background: #1a0800; border: 1px solid #ff6d0055;
+    border-radius: 20px; padding: 0.3rem 0.7rem;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.6rem;
+    color: #ff9944; text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  .resource-card {
+    background: #101810; border: 1px solid #1e2e1e; border-radius: 8px;
+    padding: 1rem; transition: all 0.2s; cursor: default;
+    display: flex; align-items: flex-start; gap: 0.75rem;
+  }
+  .resource-card:hover { border-color: #2a4a2a; background: #131f13; }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.58rem;
+    padding: 0.2rem 0.55rem; border-radius: 20px; border: 1px solid;
+    text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+  }
+  .badge-green { border-color: #00e676; color: #00e676; background: #00e67611; }
+  .badge-gold { border-color: #ffd600; color: #ffd600; background: #ffd60011; }
+  .badge-muted { border-color: #3d5c3d; color: #3d5c3d; }
+  .badge-warn { border-color: #ff6d00; color: #ff6d00; background: #ff6d0011; }
+
+  .sim-input {
+    background: #101810; border: 1px solid #1e2e1e; border-radius: 6px;
+    color: #a8c8a8; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;
+    padding: 0.55rem 0.75rem; width: 100%; outline: none;
+    transition: border-color 0.2s;
+  }
+  .sim-input:focus { border-color: #00e676; }
+
+  @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ── TABS ── */
+  .tab-nav {
+    display: flex; gap: 0.25rem;
+    background: #0c130c; border: 1px solid #1e2e1e;
+    border-radius: 10px; padding: 0.3rem;
+    margin-bottom: 1.5rem;
+  }
+  .tab-btn {
+    flex: 1; font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.05rem; letter-spacing: 0.12em;
+    padding: 0.6rem 1.5rem; border-radius: 7px;
+    border: none; cursor: pointer;
+    transition: all 0.25s; color: #3d5c3d;
+    background: transparent;
+  }
+  .tab-btn:hover { color: #7a9a7a; background: #101810; }
+  .tab-btn.active {
+    background: linear-gradient(135deg,#00e67622,#00522a33);
+    color: #00e676; border: 1px solid #00e67644;
+    box-shadow: 0 0 16px #00e67622;
+  }
+  .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+  .tab-panel.active { display: block; }
+
+  /* ── CALC CARDS ── */
+  .calc-result-box {
+    background: #0d1a0d; border: 1px solid #1e3a1e;
+    border-radius: 10px; padding: 1.25rem;
+    text-align: center; margin-top: 1rem;
+  }
+  .calc-verdict {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem; letter-spacing: 0.08em; line-height: 1;
+  }
+  .calc-detail {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: #7a9a7a; margin-top: 0.5rem; line-height: 1.7;
+  }
+</style>
+</head>
+<body class="noise-bg text-gray-300 min-h-screen">
+
+<!-- ══════════════════════════════════════
+     TILT MODAL
+══════════════════════════════════════ -->
+<div class="tilt-modal" id="tiltModal">
+  <div class="tilt-content">
+    <div class="text-5xl mb-4">♠</div>
+    <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:0.1em;color:#00e676;margin-bottom:1rem;">
+      RESPIRA. PARA. PIENSA.
+    </div>
+    <div id="mantраText" style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;color:#7a9a7a;line-height:1.8;margin-bottom:1.5rem;"></div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#3d5c3d;margin-bottom:1.5rem;">
+      🌊 Cierra los ojos. Inhala 4 seg. Aguanta 4 seg. Exhala 4 seg.
+    </div>
+    <button onclick="closeTilt()" style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#00e676;background:#00e67611;border:1px solid #00e67644;border-radius:8px;padding:0.6rem 2rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#00e67622'" onmouseout="this.style.background='#00e67611'">
+      ✓ Estoy listo para continuar
+    </button>
+  </div>
+</div>
+
+<div class="relative z-10 max-w-6xl mx-auto px-4 py-6">
+
+  <!-- ══════════════════════════════════════
+       HEADER
+  ══════════════════════════════════════ -->
+  <header class="mb-6">
+    <div class="flex items-start justify-between flex-wrap gap-4">
+      <div>
+        <div style="font-family:'Bebas Neue';font-size:clamp(1.8rem,5vw,3.2rem);letter-spacing:0.06em;color:#fff;line-height:1;">
+          POKER <span style="color:#00e676;">COMMAND</span> CENTER
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#3d5c3d;margin-top:0.3rem;letter-spacing:0.12em;">
+          TAG PLAYER · NL2 → NL10 ROADMAP · SISTEMA PERSONAL
+        </div>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="risk-badge">
+          <span style="width:6px;height:6px;background:#ff6d00;border-radius:50%;display:inline-block;animation:pulse 2s infinite;"></span>
+          Meta 10€/día — Alto riesgo
+        </div>
+        <button onclick="openTilt()" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;background:linear-gradient(135deg,#1a0a00,#2a1000);border:1px solid #ff174455;border-radius:8px;color:#ff5555;padding:0.55rem 1rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem;box-shadow:0 0 20px #ff174422;" onmouseover="this.style.boxShadow='0 0 30px #ff174444'" onmouseout="this.style.boxShadow='0 0 20px #ff174422'">
+          🚨 BOTÓN PÁNICO / TILT
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       TAB NAVIGATION
+  ══════════════════════════════════════ -->
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tabBtnDashboard" onclick="switchTab('dashboard')">⬛ DASHBOARD</button>
+    <button class="tab-btn" id="tabBtnCalcs" onclick="switchTab('calcs')">🃏 CALCULADORAS</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB: DASHBOARD
+  ══════════════════════════════════════ -->
+  <div class="tab-panel active" id="tabDashboard">
+
+  <!-- ══════════════════════════════════════
+       KPI CARDS
+  ══════════════════════════════════════ -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+
+    <div class="kpi-card">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">Banca Actual</div>
+      <div style="font-family:'Bebas Neue';font-size:2.2rem;color:#00e676;line-height:1;" id="bancaDisplay">50€</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:0.3rem;">
+        <span style="color:#00e67699;">25 buy-ins NL2</span> ✓ Seguro
+      </div>
+      <div class="progress-track mt-2">
+        <div class="progress-fill" id="bancaProgress" style="width:12.5%;"></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:#3d5c3d;margin-top:0.3rem;">12.5% → meta 400€</div>
+    </div>
+
+    <div class="kpi-card">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">Nivel Recomendado</div>
+      <div style="font-family:'Bebas Neue';font-size:2.2rem;color:#ffd600;line-height:1;">NL2</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:0.3rem;">
+        Ciegas <span style="color:#ffd60099;">0.01 / 0.02€</span>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;margin-top:0.5rem;display:flex;gap:0.4rem;flex-wrap:wrap;">
+        <span style="color:#3d5c3d;">→ NL5:</span><span style="color:#7a7a3d;">100€</span>
+        <span style="color:#3d5c3d;">→ NL10:</span><span style="color:#7a7a3d;">200€</span>
+      </div>
+    </div>
+
+    <div class="kpi-card" style="border-color:#ff6d0033;">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#ff6d0088;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">Meta Diaria ⚠️</div>
+      <div style="font-family:'Bebas Neue';font-size:2.2rem;color:#ff6d00;line-height:1;">10€</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#ff6d0099;margin-top:0.3rem;">
+        ≡ 500BB/día en NL2 🔴
+      </div>
+      <div class="warn-box" style="margin:0.5rem 0 0;padding:0.4rem 0.6rem;font-size:0.6rem;">
+        Meta realista ahora: <strong style="color:#ffd600;">+2€/día</strong> hasta 200€
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.4rem;">Estilo de Juego</div>
+      <div style="font-family:'Bebas Neue';font-size:2.2rem;color:#00b0ff;line-height:1;">TAG</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:0.3rem;">
+        Tight-Aggressive
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;margin-top:0.5rem;">
+        <span style="color:#00b0ff88;">VPIP:</span><span style="color:#7ab8cc;"> 15–18%</span>
+        <span style="color:#3d5c3d;"> · </span>
+        <span style="color:#00b0ff88;">PFR:</span><span style="color:#7ab8cc;"> 12–15%</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       ADVERTENCIA BANCA + HITOS
+  ══════════════════════════════════════ -->
+  <div class="card mb-6" style="border-color:#ff6d0033;">
+    <div class="card-header">
+      <div class="dot" style="background:#ff6d00;box-shadow:0 0 8px #ff6d0066;"></div>
+      <span style="font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.08em;color:#ff6d00;">ANÁLISIS DE RIESGO · HOJA DE RUTA REALISTA</span>
+    </div>
+    <div class="p-4">
+      <div class="warn-box" style="margin-bottom:1rem;">
+        ⚠️ <strong style="color:#ff6d00;">Meta 10€/día con 50€ de banca = 20% de riesgo diario.</strong> Estadísticamente insostenible. Un solo día malo puede eliminar el 30–40% de tu banca. El sistema te guiará con hitos intermedios seguros.
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#3d5c3d;margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.1em;">Hitos intermedios recomendados</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div style="background:#0d160d;border:1px solid;border-radius:8px;padding:0.8rem;text-align:center;" id="hito1" class="hito-card">
+          <div style="font-family:'Bebas Neue';font-size:1.4rem;color:#00e676;">100€</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;margin-top:2px;">→ NL5 posible</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#00e67666;margin-top:4px;">Meta: +1€/día</div>
+        </div>
+        <div style="background:#0d160d;border:1px solid;border-radius:8px;padding:0.8rem;text-align:center;" id="hito2" class="hito-card">
+          <div style="font-family:'Bebas Neue';font-size:1.4rem;color:#ffd600;">200€</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;margin-top:2px;">→ NL10 seguro</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#ffd60066;margin-top:4px;">Meta: +3€/día</div>
+        </div>
+        <div style="background:#0d160d;border:1px solid;border-radius:8px;padding:0.8rem;text-align:center;" id="hito3" class="hito-card">
+          <div style="font-family:'Bebas Neue';font-size:1.4rem;color:#ff6d00;">400€</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;margin-top:2px;">→ NL10 cómodo</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#ff6d0066;margin-top:4px;">Meta: +7€/día</div>
+        </div>
+        <div style="background:#0d160d;border:1px solid;border-radius:8px;padding:0.8rem;text-align:center;" id="hito4" class="hito-card">
+          <div style="font-family:'Bebas Neue';font-size:1.4rem;color:#ff1744;">600€</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;margin-top:2px;">→ 10€/día real</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#ff174466;margin-top:4px;">¡Meta cumplida!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
+    <!-- ══════════════════════════════════════
+         SIMULADOR
+    ══════════════════════════════════════ -->
+    <div class="card lg:col-span-2">
+      <div class="card-header">
+        <div class="dot" style="background:#00e676;box-shadow:0 0 8px #00e67666;"></div>
+        <span style="font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.08em;color:#e0f0e0;">SIMULADOR DE CRECIMIENTO</span>
+        <span class="badge badge-green ml-auto">NL2 · BB=0.02€</span>
+      </div>
+      <div class="p-4">
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <div>
+            <label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Banca (€)</label>
+            <input type="number" class="sim-input" id="simBanca" value="50" oninput="calcSim()">
+          </div>
+          <div>
+            <label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Win Rate BB/100</label>
+            <input type="number" class="sim-input" id="simWR" value="5" step="0.5" oninput="calcSim()">
+          </div>
+          <div>
+            <label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Manos/día</label>
+            <input type="number" class="sim-input" id="simHands" value="200" oninput="calcSim()">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div style="background:#0d160d;border:1px solid #1e2e1e;border-radius:8px;padding:0.8rem;text-align:center;">
+            <div style="font-family:'Bebas Neue';font-size:1.5rem;color:#00e676;" id="sim1m">—</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;text-transform:uppercase;">1 mes</div>
+          </div>
+          <div style="background:#0d160d;border:1px solid #1e2e1e;border-radius:8px;padding:0.8rem;text-align:center;">
+            <div style="font-family:'Bebas Neue';font-size:1.5rem;color:#ffd600;" id="sim3m">—</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;text-transform:uppercase;">3 meses</div>
+          </div>
+          <div style="background:#0d160d;border:1px solid #1e2e1e;border-radius:8px;padding:0.8rem;text-align:center;">
+            <div style="font-family:'Bebas Neue';font-size:1.5rem;color:#ff6d00;" id="simD400">—</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;text-transform:uppercase;">Días → 400€</div>
+          </div>
+          <div style="background:#0d160d;border:1px solid #1e2e1e;border-radius:8px;padding:0.8rem;text-align:center;">
+            <div style="font-family:'Bebas Neue';font-size:1.5rem;color:#00b0ff;" id="simDaily">—</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;text-transform:uppercase;">€/día</div>
+          </div>
+        </div>
+        <div style="background:#0d160d;border:1px solid #1e2e1e;border-radius:8px;overflow:hidden;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;padding:0.5rem 0.75rem;border-bottom:1px solid #1e2e1e;text-transform:uppercase;letter-spacing:0.08em;">Progresión estimada hacia 400€</div>
+          <div style="padding:0.75rem;display:flex;flex-direction:column;gap:0.4rem;" id="progressBars">
+            <!-- Generado por JS -->
+          </div>
+        </div>
+        <p style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;margin-top:0.6rem;line-height:1.6;">
+          * Cálculo lineal. La varianza real puede alejarte ±40% en el corto plazo. Win rate de 5 BB/100 es alcanzable con estudio constante.
+        </p>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         STOP-LOSS TRACKER
+    ══════════════════════════════════════ -->
+    <div class="card">
+      <div class="card-header">
+        <div class="dot" style="background:#ff1744;box-shadow:0 0 8px #ff174466;"></div>
+        <span style="font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.08em;color:#e0f0e0;">STOP-LOSS SESIÓN</span>
+      </div>
+      <div class="p-4">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#3d5c3d;margin-bottom:0.6rem;">Banca antes de sesión (€)</div>
+        <input type="number" class="sim-input mb-3" id="slBanca" value="50" oninput="calcStopLoss()">
+        <div style="background:#180800;border:1px solid #ff174433;border-radius:8px;padding:1rem;margin-bottom:0.75rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#ff174488;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.4rem;">Stop-Loss 15%</div>
+          <div style="font-family:'Bebas Neue';font-size:2rem;color:#ff1744;line-height:1;" id="slValue">7.50€</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#ff174466;margin-top:0.3rem;" id="slBB">= 375 BB perdidas → PARA</div>
+        </div>
+        <div style="background:#0d1a0d;border:1px solid #00e67622;border-radius:8px;padding:0.75rem;margin-bottom:0.75rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#00e67688;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Banca mínima tras sesión</div>
+          <div style="font-family:'Bebas Neue';font-size:1.6rem;color:#00e676;line-height:1;" id="slMin">42.50€</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:#3d5c3d;line-height:1.7;border-top:1px solid #1e2e1e;padding-top:0.75rem;">
+          <div style="color:#ff174488;margin-bottom:0.3rem;font-size:0.62rem;text-transform:uppercase;letter-spacing:0.06em;">Señales de TILT → PARA YA</div>
+          <div>🔴 Llevas 2+ buy-ins perdidos</div>
+          <div>🔴 Piensas en "recuperar"</div>
+          <div>🔴 +3 horas seguidas</div>
+          <div>🔴 Manos que normalmente foldeas</div>
+          <div>🔴 Sientes tensión física</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PLAN DE ESTUDIO — 4 FASES
+  ══════════════════════════════════════ -->
+  <div class="card mb-6">
+    <div class="card-header">
+      <div class="dot" style="background:#ffd600;box-shadow:0 0 8px #ffd60066;"></div>
+      <span style="font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.08em;color:#e0f0e0;">PLAN DE ESTUDIO MODULAR</span>
+      <div class="ml-auto flex items-center gap-3">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#3d5c3d;">Progreso: <span id="globalPct" style="color:#00e676;">0%</span></div>
+        <button onclick="resetAll()" style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;background:#1a2a1a;border:1px solid #2a3a2a;border-radius:4px;padding:0.2rem 0.5rem;cursor:pointer;">Reset</button>
+      </div>
+    </div>
+
+    <!-- Barra progreso global -->
+    <div style="padding:0 1.25rem;padding-top:0.75rem;padding-bottom:0;">
+      <div class="progress-track" style="height:6px;">
+        <div class="progress-fill" id="globalBar" style="width:0%;"></div>
+      </div>
+    </div>
+
+    <div class="p-4 grid grid-cols-1 xl:grid-cols-2 gap-4">
+
+      <!-- FASE 1 -->
+      <div class="phase-card" id="phase1">
+        <div class="phase-header" onclick="togglePhase(1)">
+          <div style="font-family:'Bebas Neue';font-size:1.8rem;color:#00522a;line-height:1;min-width:1.8rem;">01</div>
+          <div style="flex:1;">
+            <div style="font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.06em;color:#fff;">FUNDAMENTOS MATEMÁTICOS</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;margin-top:1px;" id="ph1lbl">Semanas 1–2 · 0/5 completados</div>
+          </div>
+          <span class="badge badge-green">Empieza aquí</span>
+          <span id="arr1" style="color:#3d5c3d;font-size:0.75rem;transition:transform 0.3s;margin-left:0.3rem;">▼</span>
+        </div>
+        <div id="ph1body" style="display:block;">
+          <div class="progress-track" style="border-radius:0;">
+            <div class="progress-fill" id="prog1" style="width:0%;"></div>
+          </div>
+
+          <!-- Task 1.1 -->
+          <div id="trow-1-1">
+            <div class="task-row" onclick="toggleTaskLesson('1-1')">
+              <div class="checkbox" id="chk-1-1" onclick="event.stopPropagation();toggleCheck('1-1')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-1-1">Pot Odds — Calcular en tiempo real</div>
+                <div class="task-sub">Matemáticas · Esencial</div>
+              </div>
+              <span class="expand-btn" id="ebtn-1-1">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-1-1">
+              <h4>¿Qué son los Pot Odds?</h4>
+              <p>Relación entre lo que hay en el bote y lo que tienes que pagar. Te dicen si una llamada es <strong>matemáticamente rentable</strong>.</p>
+              <div class="formula-box">Pot Odds (%) = Tu call ÷ (Bote + Tu call) × 100</div>
+              <div class="example-box">
+                <strong style="color:#00e676;">Ejemplo:</strong> Bote 10€ · Rival apuesta 5€<br>
+                → 5 ÷ (10+5+5) × 100 = <span class="hl">25%</span><br>
+                Si equidad &gt; 25% → LLAMAS ✓ · Si &lt; 25% → FOLDEAS ✗
+              </div>
+              <table class="mini-table">
+                <tr><th>Apuesta rival</th><th>Odds necesarios</th></tr>
+                <tr><td>½ del bote</td><td>~25%</td></tr>
+                <tr><td>¾ del bote</td><td>~30%</td></tr>
+                <tr><td>El bote completo</td><td>~33%</td></tr>
+                <tr><td>2× el bote</td><td>~40%</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- Task 1.2 -->
+          <div id="trow-1-2">
+            <div class="task-row" onclick="toggleTaskLesson('1-2')">
+              <div class="checkbox" id="chk-1-2" onclick="event.stopPropagation();toggleCheck('1-2')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-1-2">Regla del 2 y el 4 — Outs rápidos</div>
+                <div class="task-sub">Matemáticas · Uso en mesa</div>
+              </div>
+              <span class="expand-btn" id="ebtn-1-2">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-1-2">
+              <h4>Calcular equidad en segundos</h4>
+              <div class="formula-box">FLOP (2 cartas por ver): Outs × 4 = % equidad<br>TURN (1 carta por ver): Outs × 2 = % equidad</div>
+              <table class="mini-table">
+                <tr><th>Proyecto</th><th>Outs</th><th>Flop %</th><th>Turn %</th></tr>
+                <tr><td>Color (flush draw)</td><td>9</td><td>~36%</td><td>~18%</td></tr>
+                <tr><td>Escalera abierta</td><td>8</td><td>~32%</td><td>~16%</td></tr>
+                <tr><td>Escalera interior</td><td>4</td><td>~16%</td><td>~8%</td></tr>
+                <tr><td>Color + Escalera</td><td>~15</td><td>~60%</td><td>~30%</td></tr>
+              </table>
+              <div class="example-box">
+                <strong style="color:#00e676;">Ejemplo:</strong> 8♥9♥ en flop 6♥7♦K♣<br>
+                → Escalera abierta (8) + flush draw (9) ≈ 15 outs<br>
+                → 15×4 = <span class="hl">~60% equidad</span> · ¡Eres favorito sin mano hecha!
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 1.3 -->
+          <div id="trow-1-3">
+            <div class="task-row" onclick="toggleTaskLesson('1-3')">
+              <div class="checkbox" id="chk-1-3" onclick="event.stopPropagation();toggleCheck('1-3')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-1-3">Expected Value (EV) — Decisiones +EV</div>
+                <div class="task-sub">Matemáticas · Concepto clave</div>
+              </div>
+              <span class="expand-btn" id="ebtn-1-3">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-1-3">
+              <h4>¿Qué es el EV?</h4>
+              <p>Cuánto ganas o pierdes <strong>en promedio</strong> con una decisión repetida miles de veces. El poker se gana tomando decisiones +EV, no ganando manos individuales.</p>
+              <div class="formula-box">EV = (% ganar × ganancia) − (% perder × pérdida)</div>
+              <div class="example-box">
+                <strong style="color:#00e676;">Ejemplo:</strong> Bote 100€ · Rival apuesta 50€ · Tienes flush draw (36%)<br>
+                EV = (0.36 × 150) − (0.64 × 50) = 54 − 32 = <span class="hl">+22€</span><br>
+                → LLAMAS siempre, aunque a veces pierdas esa mano.
+              </div>
+              <div class="warn-box">⚠️ El poker se evalúa en 10.000+ manos, no en sesiones individuales. Las rachas malas no significan que juegas mal.</div>
+            </div>
+          </div>
+
+          <!-- Task 1.4 -->
+          <div id="trow-1-4">
+            <div class="task-row" onclick="toggleTaskLesson('1-4')">
+              <div class="checkbox" id="chk-1-4" onclick="event.stopPropagation();toggleCheck('1-4')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-1-4">Posiciones: UTG → MP → CO → BTN → SB → BB</div>
+                <div class="task-sub">Estrategia · Base del TAG</div>
+              </div>
+              <span class="expand-btn" id="ebtn-1-4">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-1-4">
+              <h4>Las posiciones de peor a mejor</h4>
+              <table class="mini-table">
+                <tr><th>Posición</th><th>Nombre</th><th>Calidad</th><th>% apertura TAG</th></tr>
+                <tr><td>UTG</td><td>Under The Gun</td><td>⭐ Peor</td><td>~8%</td></tr>
+                <tr><td>MP</td><td>Middle Position</td><td>⭐⭐</td><td>~13%</td></tr>
+                <tr><td>CO</td><td>Cutoff</td><td>⭐⭐⭐⭐</td><td>~22%</td></tr>
+                <tr><td>BTN</td><td>Button ← Mejor</td><td>⭐⭐⭐⭐⭐</td><td>~40%</td></tr>
+                <tr><td>SB</td><td>Small Blind</td><td>⭐ Peor postflop</td><td>3-bet o fold</td></tr>
+                <tr><td>BB</td><td>Big Blind</td><td>⭐⭐</td><td>Defensa amplia</td></tr>
+              </table>
+              <p><strong>Regla TAG:</strong> Cuanto peor la posición, más selectivo. Desde UTG solo premiums. Desde BTN puedes abrir ~40% de manos.</p>
+            </div>
+          </div>
+
+          <!-- Task 1.5 -->
+          <div id="trow-1-5">
+            <div class="task-row" onclick="toggleTaskLesson('1-5')">
+              <div class="checkbox" id="chk-1-5" onclick="event.stopPropagation();toggleCheck('1-5')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-1-5">Equidad y rangos — Memorización base</div>
+                <div class="task-sub">Matemáticas · Ejercicio diario</div>
+              </div>
+              <span class="expand-btn" id="ebtn-1-5">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-1-5">
+              <h4>Equidades preflop clave</h4>
+              <table class="mini-table">
+                <tr><th>Situación</th><th>Equidad</th></tr>
+                <tr><td>AA vs KK</td><td>~82% vs 18%</td></tr>
+                <tr><td>77 vs AK (par vs 2 sobrecards)</td><td>~55% vs 45%</td></tr>
+                <tr><td>AK vs 77 — ¡AK NO es favorito!</td><td>~45% vs 55%</td></tr>
+                <tr><td>Pareja top vs pareja inferior</td><td>~80% vs 20%</td></tr>
+                <tr><td>Flush draw vs pareja hecha</td><td>~35% vs 65%</td></tr>
+              </table>
+              <div class="warn-box">⚠️ El AK preflop pierde contra cualquier par. Muchos principiantes sobrevaloran AK. Practica con Equilab 15min/día.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 2 -->
+      <div class="phase-card" id="phase2">
+        <div class="phase-header" onclick="togglePhase(2)">
+          <div style="font-family:'Bebas Neue';font-size:1.8rem;color:#00522a;line-height:1;min-width:1.8rem;">02</div>
+          <div style="flex:1;">
+            <div style="font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.06em;color:#fff;">ESTRATEGIA PREFLOP TAG</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;margin-top:1px;" id="ph2lbl">Semanas 3–4 · 0/5 completados</div>
+          </div>
+          <span class="badge badge-gold">Siguiente</span>
+          <span id="arr2" style="color:#3d5c3d;font-size:0.75rem;transition:transform 0.3s;margin-left:0.3rem;">▼</span>
+        </div>
+        <div id="ph2body" style="display:none;">
+          <div class="progress-track" style="border-radius:0;">
+            <div class="progress-fill" id="prog2" style="width:0%;"></div>
+          </div>
+
+          <div id="trow-2-1">
+            <div class="task-row" onclick="toggleTaskLesson('2-1')">
+              <div class="checkbox" id="chk-2-1" onclick="event.stopPropagation();toggleCheck('2-1')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-2-1">Rangos de apertura TAG (15–18% VPIP)</div>
+                <div class="task-sub">Preflop · Core TAG</div>
+              </div>
+              <span class="expand-btn" id="ebtn-2-1">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-2-1">
+              <h4>Tu rango TAG por posición</h4>
+              <table class="mini-table">
+                <tr><th>Posición</th><th>Manos a abrir</th></tr>
+                <tr><td>UTG</td><td>TT+, AQs+, AKo</td></tr>
+                <tr><td>MP</td><td>88+, AJs+, AQo+, KQs</td></tr>
+                <tr><td>CO</td><td>66+, A9s+, KJs+, QJs, JTs, AJo+, KQo</td></tr>
+                <tr><td>BTN</td><td>44+, A5s+, K9s+, Q9s+, JTs, T9s, A9o+, KTo+, QJo</td></tr>
+                <tr><td>BB def.</td><td>Todos los pares, Ax suited, conectadas suited</td></tr>
+              </table>
+              <p>VPIP objetivo: <span class="hl">15–18%</span> en 9-max. PFR objetivo: <span class="hl">12–15%</span>. Si tu VPIP es &gt;22% eres demasiado loose. Si &lt;12% eres demasiado tight.</p>
+            </div>
+          </div>
+
+          <div id="trow-2-2">
+            <div class="task-row" onclick="toggleTaskLesson('2-2')">
+              <div class="checkbox" id="chk-2-2" onclick="event.stopPropagation();toggleCheck('2-2')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-2-2">Open raise: tamaños correctos</div>
+                <div class="task-sub">Preflop · Sizing</div>
+              </div>
+              <span class="expand-btn" id="ebtn-2-2">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-2-2">
+              <h4>Tamaños estándar de apertura</h4>
+              <table class="mini-table">
+                <tr><th>Situación</th><th>Tamaño</th><th>En NL2</th></tr>
+                <tr><td>Sin limpers</td><td>2.5x–3x BB</td><td>0.05–0.06€</td></tr>
+                <tr><td>Con 1 limper</td><td>4x BB</td><td>0.08€</td></tr>
+                <tr><td>Con 2 limpers</td><td>5x BB</td><td>0.10€</td></tr>
+                <tr><td>3-bet en posición</td><td>2.5–3x open</td><td>~0.16€</td></tr>
+                <tr><td>3-bet fuera posición</td><td>3–3.5x open</td><td>~0.20€</td></tr>
+              </table>
+              <div class="warn-box">⚠️ SIEMPRE el mismo tamaño con todas las manos desde la misma posición. Si varías el tamaño según la mano, los buenos rivales te leen.</div>
+            </div>
+          </div>
+
+          <div id="trow-2-3">
+            <div class="task-row" onclick="toggleTaskLesson('2-3')">
+              <div class="checkbox" id="chk-2-3" onclick="event.stopPropagation();toggleCheck('2-3')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-2-3">3-bet: cuándo y con qué manos</div>
+                <div class="task-sub">Preflop · Agresividad TAG</div>
+              </div>
+              <span class="expand-btn" id="ebtn-2-3">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-2-3">
+              <h4>3-bet por valor</h4>
+              <p>AA, KK, QQ, JJ (siempre), AKs, AKo, AQs en posición. Tu objetivo: que te llamen con manos peores.</p>
+              <h4>3-bet como bluff (moderado en NL2)</h4>
+              <p>A5s, A4s (tienen blocker al AA). <span class="warn">En NL2, reduce bluffs — los rivales no foldean suficiente.</span></p>
+              <h4>Respuesta a 3-bets</h4>
+              <table class="mini-table">
+                <tr><th>Tu mano</th><th>Acción recomendada</th></tr>
+                <tr><td>AA, KK, QQ</td><td>4-bet siempre</td></tr>
+                <tr><td>JJ, AKs</td><td>4-bet o call según posición</td></tr>
+                <tr><td>99-TT, AQs</td><td>Call en posición</td></tr>
+                <tr><td>Pares pequeños (22-88)</td><td>Call si hay implied odds</td></tr>
+                <tr><td>Resto</td><td>FOLD</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div id="trow-2-4">
+            <div class="task-row" onclick="toggleTaskLesson('2-4')">
+              <div class="checkbox" id="chk-2-4" onclick="event.stopPropagation();toggleCheck('2-4')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-2-4">Blind defense: cuándo defender BB y SB</div>
+                <div class="task-sub">Preflop · Defensa</div>
+              </div>
+              <span class="expand-btn" id="ebtn-2-4">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-2-4">
+              <h4>BB Defense</h4>
+              <p>Ya pagaste 1BB. Contra apertura de 3BB pagas solo 2BB más. Precio muy bueno. Defiende amplio:</p>
+              <p>Todos los pares, cualquier As suited, conectadas suited (64s+), broadways (KJo, QTo). Contra BTN: hasta K7o y J8s.</p>
+              <h4>SB Defense</h4>
+              <p>Siempre actuarás primero postflop → desventaja. Estrategia: <strong>3-bet o fold</strong>. Evita el call desde SB salvo pares y premiums.</p>
+              <div class="warn-box">⚠️ Error más común: foldar demasiado desde BB. Si el BTN abre amplio y siempre te robas, estás perdiendo dinero sistemáticamente.</div>
+            </div>
+          </div>
+
+          <div id="trow-2-5">
+            <div class="task-row" onclick="toggleTaskLesson('2-5')">
+              <div class="checkbox" id="chk-2-5" onclick="event.stopPropagation();toggleCheck('2-5')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-2-5">Tablas de apertura TAG — Memorización</div>
+                <div class="task-sub">Preflop · Drill diario</div>
+              </div>
+              <span class="expand-btn" id="ebtn-2-5">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-2-5">
+              <h4>Rutina de práctica</h4>
+              <p>15 minutos al día con <strong>Equilab</strong> o <strong>PokerTracker</strong>: lee tus rangos, visualiza el grid de manos y practica identificar cuáles abres desde cada posición.</p>
+              <div class="formula-box">
+                Métrica objetivo TAG en NL2:<br>
+                VPIP: 15–18% · PFR: 12–15%<br>
+                VPIP/PFR ratio: ~1.2–1.3<br>
+                AF (Aggression Factor): &gt;2.5
+              </div>
+              <p>Cada semana, revisa en tu tracker si tus stats coinciden con el objetivo. Si VPIP &gt;22% estás jugando demasiadas manos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 3 -->
+      <div class="phase-card" id="phase3">
+        <div class="phase-header" onclick="togglePhase(3)">
+          <div style="font-family:'Bebas Neue';font-size:1.8rem;color:#00522a;line-height:1;min-width:1.8rem;">03</div>
+          <div style="flex:1;">
+            <div style="font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.06em;color:#fff;">POSTFLOP PRO</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;margin-top:1px;" id="ph3lbl">Semanas 5–8 · 0/5 completados</div>
+          </div>
+          <span class="badge badge-muted">Fase 3</span>
+          <span id="arr3" style="color:#3d5c3d;font-size:0.75rem;transition:transform 0.3s;margin-left:0.3rem;">▼</span>
+        </div>
+        <div id="ph3body" style="display:none;">
+          <div class="progress-track" style="border-radius:0;">
+            <div class="progress-fill" id="prog3" style="width:0%;"></div>
+          </div>
+
+          <div id="trow-3-1">
+            <div class="task-row" onclick="toggleTaskLesson('3-1')">
+              <div class="checkbox" id="chk-3-1" onclick="event.stopPropagation();toggleCheck('3-1')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-3-1">C-bet: continuation bet — cuándo y cuánto</div>
+                <div class="task-sub">Postflop · Continuación de la presión</div>
+              </div>
+              <span class="expand-btn" id="ebtn-3-1">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-3-1">
+              <h4>¿Por qué funciona la C-bet?</h4>
+              <p>El rival falla el flop el <strong>~66% de las veces</strong>. Apostar continúa la presión del preflop y le fuerza a tomar decisiones con cartas malas.</p>
+              <table class="mini-table">
+                <tr><th>Textura del flop</th><th>C-bet %</th><th>Tamaño</th></tr>
+                <tr><td>Seco (K72r, rainbow)</td><td>Alta frecuencia</td><td>25–33% bote</td></tr>
+                <tr><td>Medio (T85 dos colores)</td><td>Selectivo</td><td>40–50% bote</td></tr>
+                <tr><td>Húmedo (987 dos colores)</td><td>Solo valor/proyectos</td><td>50–75% bote</td></tr>
+                <tr><td>Multiway (3+ jugadores)</td><td>Reducir mucho</td><td>Solo manos reales</td></tr>
+              </table>
+              <div class="warn-box">⚠️ Error clásico en NL2: c-bet automático en todos los tableros. Contra call stations (peces), c-bet solo con valor real.</div>
+            </div>
+          </div>
+
+          <div id="trow-3-2">
+            <div class="task-row" onclick="toggleTaskLesson('3-2')">
+              <div class="checkbox" id="chk-3-2" onclick="event.stopPropagation();toggleCheck('3-2')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-3-2">Value Betting: extraer el máximo</div>
+                <div class="task-sub">Postflop · Donde se gana el dinero</div>
+              </div>
+              <span class="expand-btn" id="ebtn-3-2">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-3-2">
+              <h4>La pregunta clave antes de apostar</h4>
+              <p><em>"¿Qué manos PEORES que la mía me pueden llamar aquí?"</em></p>
+              <table class="mini-table">
+                <tr><th>Mano</th><th>Tamaño value bet</th></tr>
+                <tr><td>Full house, color, escalera</td><td>75–100% del bote</td></tr>
+                <tr><td>Conjunto, dos pares</td><td>60–75%</td></tr>
+                <tr><td>Pareja top buen kicker</td><td>40–60%</td></tr>
+                <tr><td>Segunda pareja, marginal</td><td>30% o check</td></tr>
+              </table>
+              <div class="warn-box">⚠️ ERROR Nº1 en NL2: apostar pequeño con manos fuertes "por miedo". Los peces LLAMAN. Con trío o mejor → apuesta el bote completo. Te pagarán igual.</div>
+            </div>
+          </div>
+
+          <div id="trow-3-3">
+            <div class="task-row" onclick="toggleTaskLesson('3-3')">
+              <div class="checkbox" id="chk-3-3" onclick="event.stopPropagation();toggleCheck('3-3')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-3-3">Semi-bluff: apostar con proyectos fuertes</div>
+                <div class="task-sub">Postflop · Agresividad rentable</div>
+              </div>
+              <span class="expand-btn" id="ebtn-3-3">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-3-3">
+              <h4>¿Por qué el semi-bluff es superior al bluff puro?</h4>
+              <p>Tienes <strong>dos formas de ganar</strong>: el rival foldea ahora, O ligas el proyecto y ganas igual.</p>
+              <div class="example-box">
+                <strong style="color:#00e676;">Ejemplo perfecto:</strong> A♥K♥ · Flop J♥8♥2♦<br>
+                → Flush draw 9 outs + 2 overcards 6 outs ≈ ~50% equidad<br>
+                → Apostar o subir es <span class="hl">excelente</span>. Tienes plan A y plan B.
+              </div>
+              <p>Manos para semi-bluff: flush draw (9 outs), escalera abierta (8 outs), doble proyecto (~15 outs = ¡eres favorito!).</p>
+            </div>
+          </div>
+
+          <div id="trow-3-4">
+            <div class="task-row" onclick="toggleTaskLesson('3-4')">
+              <div class="checkbox" id="chk-3-4" onclick="event.stopPropagation();toggleCheck('3-4')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-3-4">Lectura de perfiles: Peces 🐟 vs Rocas 🪨</div>
+                <div class="task-sub">Postflop · Explotación en NL2</div>
+              </div>
+              <span class="expand-btn" id="ebtn-3-4">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-3-4">
+              <h4>Cómo identificar y explotar cada perfil</h4>
+              <table class="mini-table">
+                <tr><th>Perfil</th><th>Stats típicas</th><th>Cómo explotarlo</th></tr>
+                <tr><td>🐟 Pez (Fish)</td><td>VPIP &gt;40%, PFR &lt;8%</td><td>Value bet grande, no bluffees</td></tr>
+                <tr><td>🪨 Roca (Nit)</td><td>VPIP &lt;12%, PFR &lt;8%</td><td>Roba blinds, respeta sus apuestas</td></tr>
+                <tr><td>⚡ TAG (como tú)</td><td>VPIP 15-22%, PFR 12-18%</td><td>Juego técnico, bluffs selectivos</td></tr>
+                <tr><td>🌪️ LAG</td><td>VPIP &gt;28%, PFR &gt;22%</td><td>Trampas, valor fino, no pelees</td></tr>
+              </table>
+              <div class="example-box">
+                <strong style="color:#00e676;">Señales en NL2:</strong><br>
+                🔴 Bet river 2x+ el bote → casi siempre valor, los fish NO bluffean grande<br>
+                🟢 Check en tablero seco después de defender BB → debilidad, apuesta<br>
+                🔴 Limp-call preflop → par pequeño o suited connector, cuidado en el flop
+              </div>
+            </div>
+          </div>
+
+          <div id="trow-3-5">
+            <div class="task-row" onclick="toggleTaskLesson('3-5')">
+              <div class="checkbox" id="chk-3-5" onclick="event.stopPropagation();toggleCheck('3-5')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-3-5">Texturas de tablero y check-raise</div>
+                <div class="task-sub">Postflop · Lectura avanzada</div>
+              </div>
+              <span class="expand-btn" id="ebtn-3-5">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-3-5">
+              <h4>Tipos de tablero</h4>
+              <table class="mini-table">
+                <tr><th>Tipo</th><th>Ejemplo</th><th>Estrategia</th></tr>
+                <tr><td>Seco rainbow</td><td>K♠7♦2♣</td><td>C-bet pequeño con todo tu rango</td></tr>
+                <tr><td>Húmedo conectado</td><td>9♥8♥7♦</td><td>Solo c-bet con valor/proyectos</td></tr>
+                <tr><td>Monotono</td><td>K♥8♥3♥</td><td>Peligroso para pares. Cuidado.</td></tr>
+                <tr><td>Pareado</td><td>A♠A♦7♣</td><td>Ventaja para el abriente</td></tr>
+              </table>
+              <h4>Check-raise</h4>
+              <p>Check → rival apuesta → subir. Para valor con conjunto/dos pares. Para semi-bluff con proyectos fuertes fuera de posición. <strong>En NL2: úsalo principalmente por valor.</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FASE 4 -->
+      <div class="phase-card" id="phase4">
+        <div class="phase-header" onclick="togglePhase(4)">
+          <div style="font-family:'Bebas Neue';font-size:1.8rem;color:#00522a;line-height:1;min-width:1.8rem;">04</div>
+          <div style="flex:1;">
+            <div style="font-family:'Bebas Neue';font-size:1rem;letter-spacing:0.06em;color:#fff;">MENTAL GAME & GESTIÓN EMOCIONAL</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:#3d5c3d;margin-top:1px;" id="ph4lbl">Continuo · 0/5 completados</div>
+          </div>
+          <span class="badge badge-warn">Siempre</span>
+          <span id="arr4" style="color:#3d5c3d;font-size:0.75rem;transition:transform 0.3s;margin-left:0.3rem;">▼</span>
+        </div>
+        <div id="ph4body" style="display:none;">
+          <div class="progress-track" style="border-radius:0;">
+            <div class="progress-fill" id="prog4" style="width:0%;"></div>
+          </div>
+
+          <div id="trow-4-1">
+            <div class="task-row" onclick="toggleTaskLesson('4-1')">
+              <div class="checkbox" id="chk-4-1" onclick="event.stopPropagation();toggleCheck('4-1')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-4-1">Stop-loss 15% por sesión — regla irrompible</div>
+                <div class="task-sub">Gestión · Protección de banca</div>
+              </div>
+              <span class="expand-btn" id="ebtn-4-1">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-4-1">
+              <h4>La regla del 15%</h4>
+              <p>Si pierdes el 15% de tu banca en una sesión → CIERRA. Sin excepciones.</p>
+              <div class="formula-box">Stop-loss = Banca × 0.15<br>Con 50€ → para si pierdes 7.50€<br>Con 100€ → para si pierdes 15€<br>Con 200€ → para si pierdes 30€</div>
+              <p>¿Por qué? Cuando estás perdiendo, el cerebro entra en "modo recuperación" y toma peores decisiones. El stop-loss te protege de ti mismo.</p>
+              <h4>Duración máxima de sesión</h4>
+              <p>Máximo <strong>2–3 horas</strong>. Después, la concentración baja y los errores suben. Descansa 10 min por hora.</p>
+            </div>
+          </div>
+
+          <div id="trow-4-2">
+            <div class="task-row" onclick="toggleTaskLesson('4-2')">
+              <div class="checkbox" id="chk-4-2" onclick="event.stopPropagation();toggleCheck('4-2')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-4-2">Reconocer y salir del tilt</div>
+                <div class="task-sub">Mental · El factor más importante</div>
+              </div>
+              <span class="expand-btn" id="ebtn-4-2">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-4-2">
+              <h4>Tipos de tilt</h4>
+              <table class="mini-table">
+                <tr><th>Tipo</th><th>Síntoma</th></tr>
+                <tr><td>Bad beat tilt</td><td>Llamas más para "vengarte"</td></tr>
+                <tr><td>Tilt frío</td><td>Juegas demasiado pasivo por miedo</td></tr>
+                <tr><td>Tilt aburrimiento</td><td>Juegas manos débiles por hacer algo</td></tr>
+                <tr><td>Tilt recuperación</td><td>Subes stakes para recuperar rápido</td></tr>
+              </table>
+              <h4>Protocolo de 5 pasos</h4>
+              <p>1. Reconocer · 2. Cerrar mesas · 3. Salir 10 min · 4. Respirar · 5. Si vuelves, solo 1 mesa</p>
+              <div class="formula-box">"El bad beat fue suerte. Mi decisión fue +EV.<br>El largo plazo me dará la razón."</div>
+            </div>
+          </div>
+
+          <div id="trow-4-3">
+            <div class="task-row" onclick="toggleTaskLesson('4-3')">
+              <div class="checkbox" id="chk-4-3" onclick="event.stopPropagation();toggleCheck('4-3')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-4-3">Diario de errores — Revisión de manos</div>
+                <div class="task-sub">Estudio · Ciclo de mejora</div>
+              </div>
+              <span class="expand-btn" id="ebtn-4-3">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-4-3">
+              <h4>El ciclo de mejora</h4>
+              <p>Jugar → Revisar → Identificar error → Estudiar → Aplicar → Jugar</p>
+              <p>Revisión mínima por sesión: <strong>3 manos</strong>. Prioritarias:</p>
+              <p>1. Perdiste un bote grande y dudas de tu jugada<br>
+              2. Hiciste un bluff o fold poco habitual<br>
+              3. Una mano donde ganaste pero no sabes si fue suerte o buen juego</p>
+              <h4>Diario de errores</h4>
+              <p>Un archivo con tus "leaks" recurrentes. ¿Siempre pierdes en rivers? ¿Pagas demasiado en tableros húmedos? El patrón te dirá dónde estudiar más.</p>
+            </div>
+          </div>
+
+          <div id="trow-4-4">
+            <div class="task-row" onclick="toggleTaskLesson('4-4')">
+              <div class="checkbox" id="chk-4-4" onclick="event.stopPropagation();toggleCheck('4-4')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-4-4">Bankroll management — Regla 20 buy-ins</div>
+                <div class="task-sub">Gestión · Supervivencia a largo plazo</div>
+              </div>
+              <span class="expand-btn" id="ebtn-4-4">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-4-4">
+              <h4>Regla de los buy-ins</h4>
+              <table class="mini-table">
+                <tr><th>Stake</th><th>Buy-in</th><th>Mínimo (20BI)</th><th>Ideal (30BI)</th></tr>
+                <tr><td>NL2</td><td>2€</td><td>40€</td><td>60€</td></tr>
+                <tr><td>NL5</td><td>5€</td><td>100€</td><td>150€</td></tr>
+                <tr><td>NL10</td><td>10€</td><td>200€</td><td>300€</td></tr>
+                <tr><td>NL25</td><td>25€</td><td>500€</td><td>750€</td></tr>
+              </table>
+              <div class="warn-box">⚠️ Si tu banca cae a &lt;15 buy-ins en tu stake actual → baja sin ego. Ejemplo: juegas NL10 y caes a 150€ → muévete a NL5 inmediatamente.</div>
+            </div>
+          </div>
+
+          <div id="trow-4-5">
+            <div class="task-row" onclick="toggleTaskLesson('4-5')">
+              <div class="checkbox" id="chk-4-5" onclick="event.stopPropagation();toggleCheck('4-5')"></div>
+              <div class="task-body">
+                <div class="task-title" id="ttl-4-5">Registro de sesiones y métricas clave</div>
+                <div class="task-sub">Gestión · Tu GPS de mejora</div>
+              </div>
+              <span class="expand-btn" id="ebtn-4-5">📖 Lección</span>
+            </div>
+            <div class="lesson-panel" id="les-4-5">
+              <h4>Qué registrar cada sesión</h4>
+              <p>Fecha · Sala · Horas · Manos · Resultado (€) · Buy-ins ±  · Nota emocional</p>
+              <h4>Métricas target TAG en NL2</h4>
+              <div class="formula-box">
+                BB/100 objetivo: 5–10 BB<br>
+                VPIP: 15–18% · PFR: 12–15%<br>
+                Wtsd%: 25–30% · W$sd: 54%+<br>
+                AF (Aggression Factor): 2.5–4
+              </div>
+              <div class="warn-box">⚠️ No evalúes resultados con menos de 10.000 manos. La varianza puede hacerte perder 20+ buy-ins jugando perfectamente.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       RECURSOS
+  ══════════════════════════════════════ -->
+  <div class="card mb-6">
+    <div class="card-header">
+      <div class="dot" style="background:#00b0ff;box-shadow:0 0 8px #00b0ff66;"></div>
+      <span style="font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.08em;color:#e0f0e0;">RECURSOS RECOMENDADOS</span>
+    </div>
+    <div class="p-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="resource-card">
+          <div style="font-size:1.5rem;flex-shrink:0;">📖</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:0.85rem;letter-spacing:0.06em;color:#fff;">POKER'S 1%</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:2px;">Ed Miller · Empieza por este</div>
+            <span class="badge badge-green" style="margin-top:6px;display:inline-block;">Prioritario</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div style="font-size:1.5rem;flex-shrink:0;">📖</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:0.85rem;letter-spacing:0.06em;color:#fff;">THEORY OF POKER</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:2px;">David Sklansky · Base matemática</div>
+            <span class="badge badge-gold" style="margin-top:6px;display:inline-block;">Fase 1–2</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div style="font-size:1.5rem;flex-shrink:0;">📖</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:0.85rem;letter-spacing:0.06em;color:#fff;">MENTAL GAME</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:2px;">Jared Tendler · Tilt &amp; mentalidad</div>
+            <span class="badge badge-warn" style="margin-top:6px;display:inline-block;">Fase 4</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div style="font-size:1.5rem;flex-shrink:0;">🔧</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:0.85rem;letter-spacing:0.06em;color:#fff;">EQUILAB</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:2px;">Calculador equidad · Gratis (PC)</div>
+            <span class="badge badge-green" style="margin-top:6px;display:inline-block;">Gratis</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div style="font-size:1.5rem;flex-shrink:0;">🔧</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:0.85rem;letter-spacing:0.06em;color:#fff;">GTO+</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:2px;">Solver postflop · NL10+</div>
+            <span class="badge badge-muted" style="margin-top:6px;display:inline-block;">Avanzado</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div style="font-size:1.5rem;flex-shrink:0;">🔧</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:0.85rem;letter-spacing:0.06em;color:#fff;">POKERTRACKER 4</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:2px;">Tracker + HUD · Trial 30 días</div>
+            <span class="badge badge-gold" style="margin-top:6px;display:inline-block;">Trial gratis</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div style="font-size:1.5rem;flex-shrink:0;">🎥</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:0.85rem;letter-spacing:0.06em;color:#fff;">JONATHAN LITTLE</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:2px;">YouTube · Revisión de manos</div>
+            <span class="badge badge-green" style="margin-top:6px;display:inline-block;">Gratis</span>
+          </div>
+        </div>
+        <div class="resource-card">
+          <div style="font-size:1.5rem;flex-shrink:0;">🎥</div>
+          <div>
+            <div style="font-family:'Bebas Neue';font-size:0.85rem;letter-spacing:0.06em;color:#fff;">SPLITSUIT POKER</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;margin-top:2px;">YouTube · Enfoque matemático</div>
+            <span class="badge badge-green" style="margin-top:6px;display:inline-block;">Gratis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#1e3a1e;padding:1rem;">
+    ♠ POKER COMMAND CENTER · TAG SYSTEM · NL2 → 400€ ROADMAP · ♣
+  </div>
+
+  </div><!-- /tabDashboard -->
+
+  <!-- ══════════════════════════════════════
+       TAB: CALCULADORAS
+  ══════════════════════════════════════ -->
+  <div class="tab-panel" id="tabCalcs">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+      <!-- ── CALCULADORA 1: POT ODDS ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="dot" style="background:#00e676;box-shadow:0 0 8px #00e67666;"></div>
+          <span style="font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.08em;color:#e0f0e0;">CALC #1 · POT ODDS + REGLA ×2 / ×4</span>
+          <span class="badge badge-green ml-auto">En mesa</span>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-3 gap-3 mb-2">
+            <div>
+              <label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Bote (€)</label>
+              <input type="number" class="sim-input" id="poBote" value="10" min="0" oninput="calcPotOdds()">
+            </div>
+            <div>
+              <label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Apuesta rival (€)</label>
+              <input type="number" class="sim-input" id="poApuesta" value="5" min="0" oninput="calcPotOdds()">
+            </div>
+            <div>
+              <label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Outs</label>
+              <input type="number" class="sim-input" id="poOuts" value="9" min="0" max="46" oninput="calcPotOdds()">
+            </div>
+          </div>
+
+          <!-- Selector FLOP / TURN -->
+          <div style="display:flex;gap:0.5rem;margin-bottom:1rem;margin-top:0.75rem;">
+            <label style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;margin-right:0.25rem;align-self:center;">Calle:</label>
+            <button id="btnFlop" onclick="setStreet('flop')"
+              style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;padding:0.3rem 0.8rem;border-radius:5px;border:1px solid #00e67644;background:#00e67622;color:#00e676;cursor:pointer;transition:all 0.2s;">
+              FLOP (×4)
+            </button>
+            <button id="btnTurn" onclick="setStreet('turn')"
+              style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;padding:0.3rem 0.8rem;border-radius:5px;border:1px solid #1e2e1e;background:#101810;color:#3d5c3d;cursor:pointer;transition:all 0.2s;">
+              TURN (×2)
+            </button>
+          </div>
+
+          <div class="calc-result-box" id="poResult">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Resultado</div>
+            <div class="calc-verdict" id="poVerdict" style="color:#00e676;">CALL ✓</div>
+            <div class="calc-detail" id="poDetail">—</div>
+          </div>
+
+          <div class="formula-box" style="margin-top:1rem;">
+            <strong style="color:#c8e8c8;">Fórmula:</strong><br>
+            Pot Odds = Apuesta ÷ (Bote + Apuesta + Apuesta) × 100<br>
+            Equidad ≈ Outs × <span style="color:#00e676;">4</span> (flop) · Outs × <span style="color:#ffd600;">2</span> (turn)
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CALCULADORA 2: SPR ── -->
+      <div class="card">
+        <div class="card-header">
+          <div class="dot" style="background:#ffd600;box-shadow:0 0 8px #ffd60066;"></div>
+          <span style="font-family:'Bebas Neue';font-size:0.95rem;letter-spacing:0.08em;color:#e0f0e0;">CALC #2 · SPR — COMPROMISO CON LA MANO</span>
+          <span class="badge badge-gold ml-auto">Postflop</span>
+        </div>
+        <div class="p-4">
+          <div class="grid grid-cols-2 gap-3 mb-2">
+            <div>
+              <label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Stack efectivo (€)</label>
+              <input type="number" class="sim-input" id="sprStack" value="2" min="0" step="0.1" oninput="calcSPR()">
+            </div>
+            <div>
+              <label style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:5px;">Bote al flop (€)</label>
+              <input type="number" class="sim-input" id="sprBote" value="0.2" min="0.01" step="0.1" oninput="calcSPR()">
+            </div>
+          </div>
+
+          <div class="calc-result-box" id="sprResult">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:#3d5c3d;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">SPR</div>
+            <div class="calc-verdict" id="sprValue" style="color:#ffd600;">10.0</div>
+            <div style="font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:0.08em;margin-top:0.25rem;" id="sprLevel">— COMPROMISO BAJO</div>
+            <div class="calc-detail" id="sprDetail">—</div>
+          </div>
+
+          <table class="mini-table" style="margin-top:1rem;">
+            <tr><th>SPR</th><th>Zona</th><th>Estrategia</th></tr>
+            <tr><td style="color:#ff1744;">0–3</td><td style="color:#ff1744;">🔴 Alto compromiso</td><td>Comitteado. Pareja top → all-in.</td></tr>
+            <tr><td style="color:#ff6d00;">4–9</td><td style="color:#ff6d00;">🟠 Medio</td><td>Necesitas manos fuertes. Cuidado con bluffs.</td></tr>
+            <tr><td style="color:#00e676;">10+</td><td style="color:#00e676;">🟢 Bajo compromiso</td><td>Especulativo. Busca sets / flushes.</td></tr>
+          </table>
+
+          <div class="formula-box" style="margin-top:0.75rem;">
+            <strong style="color:#c8e8c8;">Fórmula:</strong> SPR = Stack efectivo ÷ Bote al flop<br>
+            <span style="color:#7a9a7a;">Stack efectivo = el menor entre tus fichas y las del rival</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer calculadoras -->
+    <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#1e3a1e;padding:1rem;">
+      ♠ POKER COMMAND CENTER · CALCULADORAS EN TIEMPO REAL · ♣
+    </div>
+
+  </div><!-- /tabCalcs -->
+
+</div>
+
+<script>
+// ══════════════════════════════════════
+// MANTRAS Y TILT MODAL
+// ══════════════════════════════════════
+const mantras = [
+  "El bad beat fue varianza.\nTu decisión fue matemáticamente correcta.\nEl largo plazo siempre da la razón.\n\nEl poker se evalúa en 10.000+ manos,\nno en una sesión.",
+  "Un jugador ganador juega su juego.\nNo busca venganza. No persigue pérdidas.\nCada mano es completamente independiente.\n\nRespira. La siguiente mano empieza de cero.",
+  "Tu trabajo no es controlar los resultados.\nTu trabajo es tomar decisiones +EV.\n\nSi tomaste la decisión correcta,\nhiciste bien tu trabajo. Punto.",
+  "Un jugador ganador no juega para recuperar.\nJuega cuando está en condiciones de ganar.\n\n¿Estás en esas condiciones ahora mismo?\nSi la respuesta es no → cierra las mesas.",
+  "La varianza es parte del juego.\nPuedes perder 10 buy-ins jugando perfectamente.\nPuedes ganar 10 buy-ins jugando mal.\n\nEl corto plazo miente.\nEl largo plazo dice la verdad.",
+  "El tilt le regala dinero a los demás.\nCada mano jugada en tilt es EV negativo.\n\nLa mesa no se va a ningún lado.\nVuelve cuando tu mente esté despejada.",
+  "Los mejores jugadores del mundo tienen bad runs.\nNo es un signo de que juegas mal.\nEs un signo de que juegas al poker.\n\nSigue el proceso. Los resultados llegarán.",
+  "Cerrar ahora no es rendirse.\nEs proteger tu banca para mañana.\n\nUn jugador disciplinado que para a tiempo\nvale más que diez jugadores que 'recuperan'."
+];
+
+function openTilt() {
+  const idx = Math.floor(Math.random() * mantras.length);
+  document.getElementById('mantраText').textContent = mantras[idx];
+  document.getElementById('tiltModal').classList.add('show');
+}
+function closeTilt() {
+  document.getElementById('tiltModal').classList.remove('show');
+}
+document.getElementById('tiltModal').addEventListener('click', function(e) {
+  if (e.target === this) closeTilt();
+});
+
+// ══════════════════════════════════════
+// LOCALSTORAGE — PROGRESO
+// ══════════════════════════════════════
+const TOTAL_TASKS = 20;
+const phases = {
+  1: ['1-1','1-2','1-3','1-4','1-5'],
+  2: ['2-1','2-2','2-3','2-4','2-5'],
+  3: ['3-1','3-2','3-3','3-4','3-5'],
+  4: ['4-1','4-2','4-3','4-4','4-5']
+};
+const phaseLabels = {
+  1: 'Semanas 1–2',
+  2: 'Semanas 3–4',
+  3: 'Semanas 5–8',
+  4: 'Continuo'
+};
+
+function loadChecks() {
+  const saved = localStorage.getItem('pokerChecks');
+  return saved ? JSON.parse(saved) : {};
+}
+function saveChecks(checks) {
+  localStorage.setItem('pokerChecks', JSON.stringify(checks));
+}
+
+function toggleCheck(id) {
+  const checks = loadChecks();
+  checks[id] = !checks[id];
+  saveChecks(checks);
+  renderChecks();
+  updateProgress();
+}
+
+function renderChecks() {
+  const checks = loadChecks();
+  Object.values(phases).flat().forEach(id => {
+    const chk = document.getElementById('chk-' + id);
+    const ttl = document.getElementById('ttl-' + id);
+    if (!chk) return;
+    if (checks[id]) {
+      chk.classList.add('checked');
+      chk.textContent = '✓';
+      ttl.classList.add('done');
+    } else {
+      chk.classList.remove('checked');
+      chk.textContent = '';
+      ttl.classList.remove('done');
+    }
+  });
+}
+
+function updateProgress() {
+  const checks = loadChecks();
+  let totalDone = 0;
+  for (let p = 1; p <= 4; p++) {
+    const tasks = phases[p];
+    const done = tasks.filter(id => checks[id]).length;
+    const pct = Math.round(done / tasks.length * 100);
+    const bar = document.getElementById('prog' + p);
+    if (bar) bar.style.width = pct + '%';
+    const lbl = document.getElementById('ph' + p + 'lbl');
+    if (lbl) lbl.textContent = phaseLabels[p] + ' · ' + done + '/' + tasks.length + ' completados';
+    totalDone += done;
+  }
+  const global = Math.round(totalDone / TOTAL_TASKS * 100);
+  document.getElementById('globalBar').style.width = global + '%';
+  document.getElementById('globalPct').textContent = global + '%';
+}
+
+function resetAll() {
+  if (confirm('¿Resetear todo el progreso?')) {
+    localStorage.removeItem('pokerChecks');
+    renderChecks();
+    updateProgress();
+  }
+}
+
+// ══════════════════════════════════════
+// TOGGLE FASES
+// ══════════════════════════════════════
+function togglePhase(n) {
+  const body = document.getElementById('ph' + n + 'body');
+  const arr = document.getElementById('arr' + n);
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  arr.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
+// ══════════════════════════════════════
+// TOGGLE LECCIONES
+// ══════════════════════════════════════
+function toggleTaskLesson(id) {
+  const les = document.getElementById('les-' + id);
+  const btn = document.getElementById('ebtn-' + id);
+  const isOpen = les.classList.contains('open');
+  les.classList.toggle('open');
+  btn.textContent = isOpen ? '📖 Lección' : '▲ Cerrar';
+}
+
+// ══════════════════════════════════════
+// SIMULADOR
+// ══════════════════════════════════════
+function calcSim() {
+  const banca = parseFloat(document.getElementById('simBanca').value) || 50;
+  const wr = parseFloat(document.getElementById('simWR').value) || 5;
+  const hands = parseFloat(document.getElementById('simHands').value) || 200;
+  const bb = 0.02;
+  const gpd = (wr / 100) * hands * bb;
+
+  const v1m = banca + gpd * 30;
+  const v3m = banca + gpd * 90;
+  const d400 = gpd > 0 ? Math.ceil((400 - banca) / gpd) : '∞';
+
+  const setColor = (el, val, target) => {
+    el.style.color = val >= target ? '#00e676' : val > banca ? '#ffd600' : '#ff1744';
+  };
+
+  const e1m = document.getElementById('sim1m');
+  const e3m = document.getElementById('sim3m');
+  e1m.textContent = v1m.toFixed(0) + '€';
+  e3m.textContent = v3m.toFixed(0) + '€';
+  setColor(e1m, v1m, 400);
+  setColor(e3m, v3m, 400);
+
+  document.getElementById('simD400').textContent = typeof d400 === 'number' ? d400 + 'd' : '∞';
+  document.getElementById('simDaily').textContent = gpd > 0 ? gpd.toFixed(2) + '€' : '0€';
+
+  // Barras de hitos
+  const hitos = [
+    { label: '→ 100€', target: 100 },
+    { label: '→ 200€', target: 200 },
+    { label: '→ 400€', target: 400 },
+  ];
+  const container = document.getElementById('progressBars');
+  container.innerHTML = hitos.map(h => {
+    const pct = Math.min(100, Math.max(0, (banca / h.target) * 100));
+    const days = gpd > 0 ? Math.ceil((h.target - banca) / gpd) : '∞';
+    const color = pct >= 100 ? '#00e676' : pct > 50 ? '#ffd600' : '#ff6d00';
+    return `
+      <div style="display:flex;align-items:center;gap:0.6rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:#3d5c3d;width:60px;flex-shrink:0;">${h.label}</div>
+        <div style="flex:1;height:4px;background:#1e2e1e;border-radius:2px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:${color};border-radius:2px;transition:width 0.4s;"></div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:${color};width:50px;text-align:right;">${pct >= 100 ? '✓' : typeof days === 'number' ? days + 'd' : '∞'}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// STOP-LOSS
+// ══════════════════════════════════════
+function calcStopLoss() {
+  const b = parseFloat(document.getElementById('slBanca').value) || 50;
+  const sl = b * 0.15;
+  const min = b - sl;
+  document.getElementById('slValue').textContent = sl.toFixed(2) + '€';
+  document.getElementById('slMin').textContent = min.toFixed(2) + '€';
+  const bb = 0.02;
+  const slBB = Math.round(sl / bb);
+  document.getElementById('slBB').textContent = '= ' + slBB + ' BB perdidas → PARA';
+}
+
+// ══════════════════════════════════════
+// HITOS — HIGHLIGHT ACTUAL
+// ══════════════════════════════════════
+function highlightHitos() {
+  const banca = 50;
+  const hitos = [
+    { id: 'hito1', target: 100, color: '#00e676' },
+    { id: 'hito2', target: 200, color: '#ffd600' },
+    { id: 'hito3', target: 400, color: '#ff6d00' },
+    { id: 'hito4', target: 600, color: '#ff1744' },
+  ];
+  hitos.forEach(h => {
+    const el = document.getElementById(h.id);
+    if (el) {
+      el.style.borderColor = banca >= h.target ? h.color : '#1e2e1e';
+      if (banca >= h.target) el.style.boxShadow = '0 0 12px ' + h.color + '22';
+    }
+  });
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+document.querySelectorAll('.sim-input, [id^="sl"]').forEach(el => {
+  if (el.tagName === 'INPUT') el.addEventListener('input', () => { calcSim(); calcStopLoss(); });
+});
+calcSim();
+calcStopLoss();
+highlightHitos();
+renderChecks();
+updateProgress();
+
+// ██████████████████████████████████████
+// ANTI-TAMPER LAYER — DevTools trap
+// ██████████████████████████████████████
+(function(){
+  var _dt = false;
+  var _threshold = 160;
+  setInterval(function(){
+    var _w = window.outerWidth - window.innerWidth;
+    var _h = window.outerHeight - window.innerHeight;
+    if(_w > _threshold || _h > _threshold){
+      if(!_dt){
+        _dt = true;
+        // Reemplaza el contenido si se detectan devtools abiertos
+        document.querySelectorAll('.tab-panel').forEach(function(p){
+          p.style.filter = 'blur(8px)';
+          p.style.pointerEvents = 'none';
+          p.style.userSelect = 'none';
+        });
+        var _warn = document.createElement('div');
+        _warn.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#180800;border-bottom:1px solid #ff174455;padding:0.75rem;text-align:center;font-family:\'Courier New\',monospace;font-size:0.75rem;color:#ff5555;z-index:9999;letter-spacing:0.06em;';
+        _warn.textContent = '⛔ Contenido protegido — Cierra las herramientas de desarrollador para continuar';
+        document.body.prepend(_warn);
+      }
+    } else {
+      if(_dt){
+        _dt = false;
+        document.querySelectorAll('.tab-panel').forEach(function(p){
+          p.style.filter = '';
+          p.style.pointerEvents = '';
+          p.style.userSelect = '';
+        });
+        var _existing = document.querySelector('[data-guard]');
+        if(_existing) _existing.remove();
+        // Recarga limpia
+        location.reload();
+      }
+    }
+  }, 1000);
+
+  // Bloquear click derecho
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+  // Bloquear atajos de teclado de devtools
+  document.addEventListener('keydown', function(e){
+    if(
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && ['I','J','C','U'].includes(e.key)) ||
+      (e.metaKey && e.altKey && ['I','J','C'].includes(e.key)) ||
+      (e.ctrlKey && e.key === 'U')
+    ){
+      e.preventDefault();
+      return false;
+    }
+  });
+})();
+
+// ██████████████████████████████████████
+// OFUSCACIÓN — Funciones de identidad
+// ██████████████████████████████████████
+// Sello de autoría embebido (no visible en UI)
+var _$auth = atob('UFJJTUVBQU1BTk8gfCBDb250ZW5pZG8gcHJvdGVnaWRvIMKpIDIwMjU=');
+var _$sig  = (function(){ return _$auth.split('').reverse().join(''); })();
+// Fingerprint de sesión (para detección de copias)
+var _$fp = btoa(navigator.userAgent + screen.width + screen.height + new Date().getTimezoneOffset());
+console.log('%c' + _$auth, 'color:#00e676;font-family:monospace;font-size:11px;');
+console.log('%cSi ves esto, este archivo tiene seguimiento de origen: ' + _$fp.substring(0,20) + '...', 'color:#ff1744;font-size:10px;font-family:monospace;');
+
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab' + (tab === 'dashboard' ? 'Dashboard' : 'Calcs')).classList.add('active');
+  document.getElementById('tabBtn' + (tab === 'dashboard' ? 'Dashboard' : 'Calcs')).classList.add('active');
+}
+
+// ══════════════════════════════════════
+// CALCULADORA 1: POT ODDS
+// ══════════════════════════════════════
+let poStreet = 'flop';
+function setStreet(s) {
+  poStreet = s;
+  const btnFlop = document.getElementById('btnFlop');
+  const btnTurn = document.getElementById('btnTurn');
+  if (s === 'flop') {
+    btnFlop.style.background = '#00e67622'; btnFlop.style.borderColor = '#00e67644'; btnFlop.style.color = '#00e676';
+    btnTurn.style.background = '#101810'; btnTurn.style.borderColor = '#1e2e1e'; btnTurn.style.color = '#3d5c3d';
+  } else {
+    btnTurn.style.background = '#ffd60022'; btnTurn.style.borderColor = '#ffd60044'; btnTurn.style.color = '#ffd600';
+    btnFlop.style.background = '#101810'; btnFlop.style.borderColor = '#1e2e1e'; btnFlop.style.color = '#3d5c3d';
+  }
+  calcPotOdds();
+}
+
+function calcPotOdds() {
+  const bote = parseFloat(document.getElementById('poBote').value) || 0;
+  const apuesta = parseFloat(document.getElementById('poApuesta').value) || 0;
+  const outs = parseFloat(document.getElementById('poOuts').value) || 0;
+
+  const totalPot = bote + apuesta + apuesta;
+  const potOddsPct = totalPot > 0 ? (apuesta / totalPot) * 100 : 0;
+  const mult = poStreet === 'flop' ? 4 : 2;
+  const equidad = outs * mult;
+
+  const verdict = document.getElementById('poVerdict');
+  const detail = document.getElementById('poDetail');
+
+  const isCall = equidad >= potOddsPct;
+  verdict.textContent = isCall ? 'CALL ✓' : 'FOLD ✗';
+  verdict.style.color = isCall ? '#00e676' : '#ff1744';
+
+  detail.innerHTML =
+    `Pot Odds necesarios: <strong style="color:#c8e8c8;">${potOddsPct.toFixed(1)}%</strong><br>` +
+    `Equidad estimada (${outs} outs × ${mult}): <strong style="color:${isCall ? '#00e676' : '#ff1744'}">${equidad}%</strong><br>` +
+    (isCall
+      ? `<span style="color:#00e676;">✓ Tu equidad supera los pot odds → rentable llamar</span>`
+      : `<span style="color:#ff1744;">✗ Tu equidad no cubre los pot odds → fold matemático</span>`);
+}
+
+// ══════════════════════════════════════
+// CALCULADORA 2: SPR
+// ══════════════════════════════════════
+function calcSPR() {
+  const stack = parseFloat(document.getElementById('sprStack').value) || 0;
+  const bote = parseFloat(document.getElementById('sprBote').value) || 0.01;
+  const spr = stack / bote;
+
+  const sprValue = document.getElementById('sprValue');
+  const sprLevel = document.getElementById('sprLevel');
+  const sprDetail = document.getElementById('sprDetail');
+
+  sprValue.textContent = spr.toFixed(1);
+
+  let color, nivel, consejo;
+  if (spr <= 3) {
+    color = '#ff1744'; nivel = '🔴 COMPROMISO ALTO';
+    consejo = 'Con SPR bajo estás comitteado. Con pareja top o mejor → juega por stacks. No hay margen para especulación.';
+  } else if (spr <= 9) {
+    color = '#ff6d00'; nivel = '🟠 COMPROMISO MEDIO';
+    consejo = 'Necesitas manos sólidas (dos pares+) para ir a guerra. Las manos débiles pierden valor. Cuidado con los bluffs costosos.';
+  } else {
+    color = '#00e676'; nivel = '🟢 COMPROMISO BAJO';
+    consejo = 'Mucho stack detrás. Las manos especulativas (proyectos de color/escalera, sets) aumentan de valor. El bluff también cobra sentido.';
+  }
+
+  sprValue.style.color = color;
+  sprLevel.textContent = nivel;
+  sprLevel.style.color = color;
+  sprDetail.innerHTML = `<span style="color:${color};">${consejo}</span>`;
+}
+
+// Init calculadoras
+calcPotOdds();
+calcSPR();
+</script>
+</body>
+</html>
